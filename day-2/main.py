@@ -15,7 +15,6 @@ def check_list_safety(line):
     # print(safe, line)
     return safe
 
-
 def part_1(input_file):
     data = load_file(input_file)
     count = 0
@@ -24,8 +23,23 @@ def part_1(input_file):
             count += 1
     return count
 
+def problem_dampener(line):
+    if check_list_safety(line):
+        return True
+    for index in range(len(line)):
+        if check_list_safety(line[:index] + line[index+1:]):
+            return True
+    return False
+
 def part_2(input_file):
-    return None
+    data = load_file(input_file)
+    count = 0
+    for line in data:
+        # print("\n")
+        if problem_dampener(line):
+            count += 1
+    return count
+
 
 if __name__ == "__main__":
     print(part_1("day-2/input/example.txt"))
