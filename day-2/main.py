@@ -1,44 +1,23 @@
-def load_file(input_file):
-    with open(input_file, "r", encoding="UTF-8") as f:
+def read_in_file(file_path):
+    with open(file_path, "r", encoding="UTF-8") as f:
         raw_data = f.read().split("\n")
-    data = [[int(y) for y in x.split()] for x in raw_data]
-    return data
+    return raw_data
+
+def load_file(input_file):
+    return [[int(y) for y in x.split()] for x in read_in_file(input_file)]
 
 def check_list_safety(line):
-    safe = True
     incr = line[0] < line[1]
-    for index in range(1, len(line)):
-        if incr:
-            safe = safe and line[index-1] < line[index] and 1 <= line[index] - line[index-1] <= 3
-        else: 
-            safe = safe and line[index-1] > line[index] and 1 <= line[index-1] - line[index] <= 3
-    # print(safe, line)
-    return safe
+    return all(line[index-incr] < line[index+incr-1] and 1 <= line[index+incr-1] - line[index-incr] <= 3 for index in range(1, len(line)))
 
 def part_1(input_file):
-    data = load_file(input_file)
-    count = 0
-    for line in data:
-        if check_list_safety(line):
-            count += 1
-    return count
+    return sum(check_list_safety(line) for line in load_file(input_file))
 
 def problem_dampener(line):
-    if check_list_safety(line):
-        return True
-    for index in range(len(line)):
-        if check_list_safety(line[:index] + line[index+1:]):
-            return True
-    return False
+    return any(check_list_safety(line[:index] + line[index+1:]) for index in range(len(line)))
 
 def part_2(input_file):
-    data = load_file(input_file)
-    count = 0
-    for line in data:
-        # print("\n")
-        if problem_dampener(line):
-            count += 1
-    return count
+    return sum(problem_dampener(line) for line in load_file(input_file))
 
 
 if __name__ == "__main__":
