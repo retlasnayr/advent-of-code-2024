@@ -9,53 +9,22 @@ def load_file(input_file):
     return read_in_file(input_file)
 
 def part_1(input_file):
-    data = load_file(input_file)
-    sum = 0
-    mult_val = 0
-    while mult_val is not None:
-        sum += mult_val
-        mult_val, data = get_first_mul(data)
-    return sum
-
-def get_first_mul(string):
-    match = re.search(r"mul\((\d+),(\d+)\)", string)
-    if match is not None:
-        return int(match.group(1)) * int(match.group(2)), string[match.end():]
-    return None, string
+    return sum(int(match[1]) * int(match[2]) for match in re.findall(r"(mul\((\d+),(\d+)\))", load_file(input_file)))
 
 def part_2(input_file):
     data = load_file(input_file)
-    sum = 0
-    mult_val = 0
+    commands = re.findall(r"(mul\((\d+),(\d+)\))|(don't\(\))|(do\(\))", data)
     enable = True
-    while True:
-        if enable:
-            sum += mult_val
-        en, mv, data = get_next_instruction(data)
-        if en is not None:
-            enable = en
-            mult_val = 0
-        elif mv is not None:
-            mult_val = mv
+    total = 0
+    for com in commands:
+        if com[4] == "do()":
+            enable = True
+        elif com[3] == "don't()":
+            enable = False
         else:
-            break
-    return sum
-
-
-def get_next_instruction(string):
-    enable = re.search(r"do\(\)", string)
-    disable = re.search(r"don't\(\)", string)
-    mult = re.search(r"mul\((\d+),(\d+)\)", string)
-    options = [enable, disable, mult]
-    if all(x is None for x in options):
-        return None, None, None
-    next = min(options, key=lambda x: x.start() if x is not None else 10**10)
-    if next == enable:
-        return True, None, string[next.end():]
-    if next == disable:
-        return False, None, string[next.end():]
-    if next == mult:
-        return None, int(mult.group(1)) * int(mult.group(2)), string[next.end():]
+            if enable:
+                total += int(com[1]) * int(com[2])
+    return total
 
 if __name__ == "__main__":
     print(part_1("day-3/input/example.txt"))
