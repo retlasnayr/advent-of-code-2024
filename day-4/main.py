@@ -32,7 +32,29 @@ def part_1(input_file):
     return count
 
 
+def part_2(input_file):
+    grid = load_file(input_file)
+    count = 0
+    for row_num, row_data in enumerate(grid):
+        for col_num, col_data in enumerate(row_data):
+            if col_data != "A":
+                continue
+            nbrs = [
+                get_val(grid, (row_num - 1, col_num - 1)),
+                get_val(grid, (row_num - 1, col_num + 1)),
+                get_val(grid, (row_num + 1, col_num + 1)),
+                get_val(grid, (row_num + 1, col_num - 1))
+            ]
+            if "S" in nbrs and "M" in nbrs and ((nbrs[0] == nbrs[1] and nbrs[2] == nbrs[3]) or (nbrs[0] == nbrs[3] and nbrs[1] == nbrs[2])) and len(set(nbrs)) == 2:
+                count += 1
+            # else:
+            #     print(nbrs)
+    return count
+
 if __name__ == "__main__":
     print(part_1("day-4/input/example.txt"))
     print(part_1("day-4/input/input.txt"))
     print(part_1("day-4/input/pf-input.txt"))
+    print(part_2("day-4/input/example.txt"))
+    print(part_2("day-4/input/input.txt"))
+    print(part_2("day-4/input/pf-input.txt"))
