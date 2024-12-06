@@ -1,3 +1,4 @@
+from itertools import cycle
 class Pair:
     def __init__(self, x, y):
         self.x = x
@@ -61,7 +62,33 @@ def next_loc(grid, curr_loc: Pair, curr_dir: Pair):
     return loc_to_try, curr_dir
 
 
+def part_2(input_file):
+    grid = load_file(input_file)
+    obstacles = set()
+    for rnum, row in enumerate(grid):
+        for cnum, col in enumerate(row):
+            if col == "^":
+                curr_loc = Pair(cnum, rnum)
+                curr_dir = Pair(0, 1)
+            if col == "#":
+                obstacles.add(Pair(cnum, rnum))
+    route = [(curr_loc, curr_dir)]
+    cycles = []
+    while True:
+        curr_loc, curr_dir = next_loc(grid, curr_loc, curr_dir)
+        if curr_loc is None:
+            break
+        route.append((curr_loc, curr_dir))
+        if (curr_loc, DIRS[curr_dir]) in route:
+            cycles.append(curr_loc + curr_dir)
+    return len(cycles)
+
+
+
 if __name__ == "__main__":
     print(part_1("day-6/input/example.txt"))
     print(part_1("day-6/input/input.txt"))
     print(part_1("day-6/input/pf-input.txt"))
+    print(part_2("day-6/input/example.txt"))
+    print(part_2("day-6/input/input.txt"))
+    print(part_2("day-6/input/pf-input.txt"))
