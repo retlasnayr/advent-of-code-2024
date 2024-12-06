@@ -53,49 +53,65 @@ def part_1(input_file):
         visited.add(curr_loc)
     return len(visited)
 
-def next_loc(grid, curr_loc: Pair, curr_dir: Pair):
+def next_loc(grid, curr_loc: Pair, curr_dir: Pair, extra_obs = None):
     loc_to_try = curr_loc + curr_dir
     new_val = get_val(grid, loc_to_try.row_col())
-    if new_val == "#":
+    if new_val == "#" or loc_to_try == extra_obs:
         return curr_loc, DIRS[curr_dir]
     if new_val is None:
         return None, curr_dir
     return loc_to_try, curr_dir
 
+# def jump_to_next_obs(obstacles, curr_loc, curr_dir):
+#     if curr_dir.x == 0:
+
+
 
 def part_2(input_file):
-    orig_grid = load_file(input_file)
+    grid = load_file(input_file)
+    dims = Pair(len(grid[0]), len(grid))
     obstacles = set()
-    for rnum, row in enumerate(orig_grid):
+    for rnum, row in enumerate(grid):
         for cnum, col in enumerate(row):
             if col == "^":
                 start_loc = Pair(cnum, rnum)
                 start_dir = Pair(0, 1)
             if col == "#":
                 obstacles.add(Pair(cnum, rnum))
+    # Run Part 1
+    curr_loc, curr_dir = start_loc, start_dir
+    visited = {curr_loc}
+    while True:
+        curr_loc, curr_dir = next_loc(grid, curr_loc, curr_dir)
+        if curr_loc is None:
+            break
+        visited.add(curr_loc)
+    
     cycles = 0
-    for i in range(len(orig_grid)):
-        for j in range(len(orig_grid[0])):
-            grid = deepcopy(orig_grid)
-            grid[i][j] = "#"
-            route = {(start_loc, start_dir)}
-            curr_loc, curr_dir = start_loc, start_dir
-            while True:
-                curr_loc, curr_dir = next_loc(grid, curr_loc, curr_dir)
-                if curr_loc is None:
-                    break
-                if (curr_loc, curr_dir) in route:
-                    cycles += 1
-                    break
-                route.add((curr_loc, curr_dir))
-        return cycles
+    for location in visited:
+        route = {(start_loc, start_dir)}
+        curr_loc, curr_dir = start_loc, start_dir
+        while True:
+            curr_loc, curr_dir = next_loc(grid, curr_loc, curr_dir, location)
+            if curr_loc is None:
+                break
+            if (curr_loc, curr_dir) in route:
+                cycles += 1
+                break
+            route.add((curr_loc, curr_dir))
+    return cycles
 
 
-
+from timeit import timeit
+from time import time
 if __name__ == "__main__":
-    print(part_1("day-6/input/example.txt"))
+    print(timeit(lambda: part_1("day-6/input/example.txt"), number = 10))
     print(part_1("day-6/input/input.txt"))
     print(part_1("day-6/input/pf-input.txt"))
-    print(part_2("day-6/input/example.txt"))
+    print(timeit(lambda: part_2("day-6/input/example.txt"), number = 10))
+    t1 = time()
     print(part_2("day-6/input/input.txt"))
+    t2 = time()
+    print(f"{t2 - t1} sec")
     print(part_2("day-6/input/pf-input.txt"))
+    print(f"{time() - t2} sec")
