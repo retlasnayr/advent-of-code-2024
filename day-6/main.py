@@ -1,4 +1,5 @@
 from itertools import cycle
+from copy import deepcopy
 class Pair:
     def __init__(self, x, y):
         self.x = x
@@ -63,25 +64,31 @@ def next_loc(grid, curr_loc: Pair, curr_dir: Pair):
 
 
 def part_2(input_file):
-    grid = load_file(input_file)
+    orig_grid = load_file(input_file)
     obstacles = set()
-    for rnum, row in enumerate(grid):
+    for rnum, row in enumerate(orig_grid):
         for cnum, col in enumerate(row):
             if col == "^":
-                curr_loc = Pair(cnum, rnum)
-                curr_dir = Pair(0, 1)
+                start_loc = Pair(cnum, rnum)
+                start_dir = Pair(0, 1)
             if col == "#":
                 obstacles.add(Pair(cnum, rnum))
-    route = [(curr_loc, curr_dir)]
-    cycles = []
-    while True:
-        curr_loc, curr_dir = next_loc(grid, curr_loc, curr_dir)
-        if curr_loc is None:
-            break
-        route.append((curr_loc, curr_dir))
-        if (curr_loc, DIRS[curr_dir]) in route:
-            cycles.append(curr_loc + curr_dir)
-    return len(cycles)
+    cycles = 0
+    for i in range(len(orig_grid)):
+        for j in range(len(orig_grid[0])):
+            grid = deepcopy(orig_grid)
+            grid[i][j] = "#"
+            route = {(start_loc, start_dir)}
+            curr_loc, curr_dir = start_loc, start_dir
+            while True:
+                curr_loc, curr_dir = next_loc(grid, curr_loc, curr_dir)
+                if curr_loc is None:
+                    break
+                if (curr_loc, curr_dir) in route:
+                    cycles += 1
+                    break
+                route.add((curr_loc, curr_dir))
+        return cycles
 
 
 
