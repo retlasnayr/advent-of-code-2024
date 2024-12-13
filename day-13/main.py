@@ -1,28 +1,27 @@
-from collections import defaultdict
-from functools import lru_cache
 import re
 
-def read_in_file(file_path: str) -> str:
+
+def read_in_file(file_path):
     with open(file_path, "r", encoding="UTF-8") as f:
         raw_data = f.read()
     return raw_data
 
-def load_file(input_file: str) -> list[int]:
+
+def load_file(input_file):
     return list(map(parse_machine, list(read_in_file(input_file).split("\n\n"))))
 
+
 def parse_machine(machine):
-    return [tuple(int(z) for z in item) for item in re.findall(r".*: X.(\d+), Y.(\d+)", machine) ]
+    return [tuple(int(z) for z in item) for item in re.findall(r".*: X.(\d+), Y.(\d+)", machine)]
     
 
-
-def part_1(input_file: str) -> int:
+def part_1(input_file):
     data = load_file(input_file)
     
     return sum(linear_algebra(m) for m in data)
     
 
-
-def part_2(input_file: str) -> int:
+def part_2(input_file):
     data = load_file(input_file)
     cost = 0
     for machine in data:
@@ -30,11 +29,13 @@ def part_2(input_file: str) -> int:
         cost += linear_algebra(machine)
     return cost
 
+
 def linear_algebra(machine):
     det = (machine[0][0] * machine[1][1] - machine[1][0] * machine[0][1])  # = (x0 y1 - x1 y0)
     a = (machine[1][1] * machine[2][0] - machine[1][0] * machine[2][1])/det  # = (y1 x2 - x1 y2) / det
     b = (machine[0][0] * machine[2][1] - machine[0][1] * machine[2][0])/det  # = (x0 y2 - y0 x2) / det
-    if a % 1 < 10**-5 and b % 1 < 10**-5:
+    # if a % 1 < 10**-5 and b % 1 < 10**-5:
+    if a % 1 == 0 and b % 1 == 0:
         return int(3*a + b)
     return 0
 
@@ -57,6 +58,7 @@ def time_and_display(funct: callable, label: str = "No Label") -> None:
     n = 100
     time = timeit(stmt=funct, number=n)
     print(f"{label}: Result: {res}, Time: {time*1000/n}ms")
+
 
 if __name__ == "__main__":
     # Part 1
