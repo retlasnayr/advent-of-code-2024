@@ -17,22 +17,39 @@ def parse_machine(machine):
 
 def part_1(input_file: str) -> int:
     data = load_file(input_file)
-    cost = 0
-    for machine in data:
-        for a in range(100):
-            for b in range(100):
-                dest = (a * machine[0][0] + b * machine[1][0], a * machine[0][1] + b * machine[1][1])
-                if dest == machine[2]:
-                    cost += 3 * a + b
     
-    return cost
+    return sum(linear_algebra(m) for m in data)
     
 
 
 def part_2(input_file: str) -> int:
-    return None
+    data = load_file(input_file)
+    cost = 0
+    for machine in data:
+        machine[2] = (machine[2][0] + 10000000000000, machine[2][1] + 10000000000000)
+        cost += linear_algebra(machine)
+    return cost
 
+def linear_algebra(machine):
+    det = (machine[0][0] * machine[1][1] - machine[1][0] * machine[0][1])  # = (x0 y1 - x1 y0)
+    a = (machine[1][1] * machine[2][0] - machine[1][0] * machine[2][1])/det  # = (y1 x2 - x1 y2) / det
+    b = (machine[0][0] * machine[2][1] - machine[0][1] * machine[2][0])/det  # = (x0 y2 - y0 x2) / det
+    if a % 1 < 10**-5 and b % 1 < 10**-5:
+        return int(3*a + b)
+    return 0
 
+"""
+ax0 + by0 = x2
+ax1 + by1 = y2
+_      _ _ _    _  _
+|x0, x1| |a|  = |x2|
+|y0, y1| |b|  = |y2|
+-      - - -    -  -
+
+|a|  = 1/(x0 y1 - y0 x1)  | y1  -x1| |x2|
+|b|                       |-y0  x0 | |y2|
+
+"""
 
 from timeit import timeit
 def time_and_display(funct: callable, label: str = "No Label") -> None:
