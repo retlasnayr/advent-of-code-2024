@@ -39,8 +39,8 @@ def linear_algebra(machine):
     return 0
 
 """
-ax0 + by0 = x2
-ax1 + by1 = y2
+ax0 + bx1 = x2
+ay0 + by1 = y2
 _      _ _ _    _  _
 |x0, x1| |a|  = |x2|
 |y0, y1| |b|  = |y2|
