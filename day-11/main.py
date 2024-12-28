@@ -7,19 +7,24 @@ def read_in_file(file_path: str) -> str:
     return raw_data
 
 def load_file(input_file: str) -> list[int]:
-    return list(map(int, read_in_file(input_file).split()))
- 
-def blink_part_1(stones: list[int]) -> list[int]:
+    return list(read_in_file(input_file).split())
+
+def strip_zeros(s):
+    if s[0] == "0" and len(s) > 1:
+        return strip_zeros(s[1:])
+    return s
+
+def blink_part_1(stones: list[str]) -> list[str]:
     new_sts = []
     for st in stones:
-        if st == 0:
-            new_sts.append(1)
-        elif len(str(st)) % 2 == 0:
-            l = len(str(st))
-            new_sts.append(st // (10**(l//2)))
-            new_sts.append(st % (10**(l//2)))
+        if st == "0":
+            new_sts.append("1")
+        elif len(st) % 2 == 0:
+            l = len(st)
+            new_sts.append(strip_zeros(st[:l//2]))
+            new_sts.append(strip_zeros(st[l//2:]))
         else:
-            new_sts.append(st*2024)
+            new_sts.append(str(int(st)*2024))
     return new_sts
 
 
@@ -32,15 +37,15 @@ def part_1(input_file: str) -> int:
     return len(data)
     
 def modify_stone(st: int) -> tuple[int]:
-    if st == 0:
-        return (1,)
-    elif len(str(st)) % 2 == 0:
-        l = len(str(st))
-        return (st // (10**(l//2)), st % (10**(l//2)))
+    if st == "0":
+        return ("1",)
+    elif len(st) % 2 == 0:
+        l = len(st)
+        return (strip_zeros(st[:l//2]), strip_zeros(st[l//2:]))
     else:
-        return (st*2024,)
+        return (str(int(st)*2024,))
 
-def blink_part_2(stones: dict[int, int]) -> dict[int, int]:
+def blink_part_2(stones: dict[str, int]) -> dict[str, int]:
     new_stones = defaultdict(lambda: 0)
     for stone in stones:
         for res in modify_stone(stone):
@@ -53,6 +58,7 @@ def part_2(input_file: str) -> int:
     for stone in data:
         stones[stone] += 1
     for _ in range(75):
+        print(stones)
         stones = blink_part_2(stones)
     return sum(stones.values())
 

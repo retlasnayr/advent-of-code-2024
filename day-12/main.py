@@ -43,8 +43,7 @@ def add_to_region(data, region, coords, seen):
     return seen, region
 
 
-def part_1(input_file: str) -> int:
-    data = load_file(input_file)
+def find_regions(data):
     regions = set()
     seen = set()
     for r_num, row in enumerate(data):
@@ -53,10 +52,27 @@ def part_1(input_file: str) -> int:
                 region = Region(col)
                 seen, region = add_to_region(data, region, (r_num, col_num), seen)
                 regions.add(region)
+    return regions
+
+
+def part_1(input_file):
+    data = load_file(input_file)
+    regions = find_regions(data)
     return sum(r.perim*len(r.cells) for r in regions)
-    
-def part_2(input_file: str) -> int | None:
-    return None
+
+
+def sides(region):
+    # convert to lattice points by multiplying by 2 then putting edges in to connect points
+    # get edge components and a path along them
+    # count corners when walking along edges
+    # num corners = num straight sides
+    pass
+
+
+def part_2(input_file):
+    data = load_file(input_file)
+    regions = find_regions(data)
+
 
 from timeit import timeit
 def time_and_display(funct: callable, label: str = "No Label") -> None:

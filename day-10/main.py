@@ -1,7 +1,5 @@
-import re
-import copy
-from collections import defaultdict
-from itertools import product
+
+from itertools import chain
 
 def read_in_file(file_path):
     with open(file_path, "r", encoding="UTF-8") as f:
@@ -21,18 +19,12 @@ def adj4(x, y):
     return [(x+1, y), (x, y+1), (x-1, y), (x, y-1)]
 
 
-def find_path(grid, cur_row, cur_col):
-    trail_ends = set()
+def find_paths(grid, cur_row, cur_col):
     cur_val = get_val(grid, (cur_row, cur_col))
-    for nbr in adj4(cur_row, cur_col):
-        nbr_val = get_val(grid, nbr)
-        if cur_val == 8 and nbr_val == 9:
-            trail_ends.add(nbr)
-        elif nbr_val is not None:
-            if nbr_val - cur_val == 1:
-                trail_ends.update(find_path(grid, nbr[0], nbr[1]))
-    return trail_ends
-
+    if cur_val == 9:
+        return {(cur_row, cur_col)}
+    return {p for f in (find_paths(grid, nbr[0], nbr[1]) for nbr in adj4(cur_row, cur_col) if get_val(grid, nbr) is not None and get_val(grid, nbr) - cur_val == 1) for p in f}
+    
 
 def part_1(input_file):
     data = load_file(input_file)
@@ -41,7 +33,7 @@ def part_1(input_file):
         for col_num, col_data in enumerate(row_data):
             if col_data != 0:
                 continue
-            path = find_path(data, row_num, col_num)
+            path = find_paths(data, row_num, col_num)
             # print(f"{row_num=}, {col_num=}, {len(path)=}, ends={path}")
             scores += len(path)
     return scores
